@@ -32,3 +32,7 @@ java -jar GenomeAnalysisTK.jar -T IndelRealigner -R $REF -I "$dir5"/"$name".addr
 
 ### CollectRawWgsMetrics
 java -jar picard.jar CollectRawWgsMetrics I="$dir5"/"$name".realn.bam O="$dir6"/"$name"_metrics.txt R=$REF INCLUDE_BQ_HISTOGRAM=true
+
+### SNP call
+
+java -Xmx8g -jar GenomeAnalysisTK.jar -T UnifiedGenotyper -I "$dir5"/"$name".realn.bam -R $REF -glm BOTH -gt_mode DISCOVERY -o $name.vcf -nt 4
