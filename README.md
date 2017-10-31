@@ -29,4 +29,6 @@ java -jar GenomeAnalysisTK.jar -T RealignerTargetCreator -R $REF -I "$dir5"/"$na
 
 ### GATK IndelRealigner
 java -jar GenomeAnalysisTK.jar -T IndelRealigner -R $REF -I "$dir5"/"$name".addrep.bam -targetIntervals "$dir5"/"$name".addrep.intervals -o "$dir5"/"$name".realn.bam
+
+### CollectRawWgsMetrics
 java -jar picard.jar CollectRawWgsMetrics I="$dir5"/"$name".realn.bam O="$dir6"/"$name"_metrics.txt R=$REF INCLUDE_BQ_HISTOGRAM=true
