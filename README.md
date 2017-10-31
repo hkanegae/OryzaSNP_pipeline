@@ -3,7 +3,7 @@ A description of the analysis step of Oryza sativa variant calling pipeline.
 
 ### REF=IRGSP-1.0_genome.fasta
 ### trimmomatic
-java -jar trimmomatic-0.36.jar PE -threads 4 -phred33 "$dir"/"$name"_1.fastq.gz "$dir"/"$name"_2.fastq.gz "$dir"/"$name"_1_paired.fastq.gz "$dir"/"$name"_1_unpaired.fastq.gz "$dir"/"$name"_2_paired.fastq.gz "$dir"/"$name"_2_unpaired.fastq.gz ILLUMINACLIP:/Volumes/SIP_Rice_Seq/Trimmomatic-0.36/adapters/TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+java -jar trimmomatic-0.36.jar PE -threads 4 -phred33 "$dir"/"$name"_1.fastq.gz "$dir"/"$name"_2.fastq.gz "$dir"/"$name"_1_paired.fastq.gz "$dir"/"$name"_1_unpaired.fastq.gz "$dir"/"$name"_2_paired.fastq.gz "$dir"/"$name"_2_unpaired.fastq.gz ILLUMINACLIP:/Trimmomatic-0.36/adapters/TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
 
 ### Mapping / bwa-0.7.12
 $bwa mem -M -t 4 oryza_index "$dir"/"$name"_1_paired.fastq.gz "$dir"/"$name"_2_paired.fastq.gz | $samtools view -bS - | $samtools sort -T tmpsam"$name" -@4 -o "$dir2"/"$name".sorted.bam
