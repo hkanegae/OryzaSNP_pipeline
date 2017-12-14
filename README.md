@@ -21,7 +21,7 @@ java -jar picard.jar FixMateInformation I="$dir2"/"$name".sorted.bam O="$dir5"/"
 java -jar picard.jar MarkDuplicates I="$dir5"/"$name".fxmt.bam O="$dir5"/"$name".mkdup.bam M="$dir5"/"$name".metrics.txt CREATE_INDEX=TRUE
 
 ### Add or replace read groups
-java -jar picard.jar AddOrReplaceReadGroups I="$dir5"/"$name".mkdup.bam O="$dir5"/"$name".addrep.bam RGPL=illumina RGLB=lib1 RGPU=unit1 RGSM=20
+java -jar picard.jar AddOrReplaceReadGroups I="$dir5"/"$name".mkdup.bam O="$dir5"/"$name".addrep.bam RGPL=illumina RGLB=lib1 RGPU=unit1 RGSM="$name" RGID="$name"
 $samtools index "$dir5"/"$name".addrep.bam
 
 ### GATK RealignerTargetCreator
