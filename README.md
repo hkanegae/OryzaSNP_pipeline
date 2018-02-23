@@ -8,7 +8,7 @@ java -jar trimmomatic-0.36.jar PE -threads 4 -phred33 "$dir"/"$name"_1.fastq.gz 
 ### Mapping / bwa-0.7.12
 $bwa mem -M -t 4 oryza_index "$dir"/"$name"_1_paired.fastq.gz "$dir"/"$name"_2_paired.fastq.gz | $samtools view -bS - | $samtools sort -T tmpsam"$name" -@4 -o "$dir2"/"$name".sorted.bam
 
-### samtools fragstat / samtools-1.3.1
+### samtools flagstat / samtools-1.3.1
 $samtools flagstat "$dir2"/"$name".sorted.bam > "$dir3"/"$name"_flagstat.txt
 
 ### sort_bam index
