@@ -1,6 +1,15 @@
 ## OryzaSNP_pipeline
 A description of the analysis step of Oryza sativa variant calling pipeline.
 
+### Description of grain weight distribution leading to genomic selection for grain-filling characteristics in rice.  
+Yabe S, Yoshida H, Kajiya-Kanegae H, Yamasaki M, Iwata H, Ebana K, Hayashi T, Nakagawa H.   
+PLoS One. 2018 Nov 20;13(11):e0207627.  
+[doi: 10.1371/journal.pone.0207627.](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0207627)
+PMID: 30458025   
+[Pipeline LINK](https://github.com/hkanegae/OryzaSNP_pipeline/blob/master/PMID30458025.md)  
+
+***
+
 ### REF=IRGSP-1.0_genome.fasta
 ### trimmomatic
 java -jar trimmomatic-0.36.jar PE -threads 4 -phred33 "$dir"/"$name"_1.fastq.gz "$dir"/"$name"_2.fastq.gz "$dir"/"$name"_1_paired.fastq.gz "$dir"/"$name"_1_unpaired.fastq.gz "$dir"/"$name"_2_paired.fastq.gz "$dir"/"$name"_2_unpaired.fastq.gz ILLUMINACLIP:/Trimmomatic-0.36/adapters/TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
@@ -25,7 +34,7 @@ java -jar picard.jar AddOrReplaceReadGroups I="$dir5"/"$name".mkdup.bam O="$dir5
 
 $samtools index "$dir5"/"$name".addrep.bam
 
-### GATK RealignerTargetCreator
+### GATK RealignerTargetCreator / GATK 3.7-0-gcfedb67
 java -jar GenomeAnalysisTK.jar -T RealignerTargetCreator -R $REF -I "$dir5"/"$name".addrep.bam -o "$dir5"/"$name".addrep.intervals
 
 ### GATK IndelRealigner
