@@ -8,6 +8,11 @@ PLoS One. 2018 Nov 20;13(11):e0207627.
 PMID: 30458025   
 [Pipeline LINK](https://github.com/hkanegae/OryzaSNP_pipeline/blob/master/PMID30458025.md)  
 
+### Choosing the optimal population for a genome‐wide association study: A simulation of whole‐genome sequences from rice
+Kosuke Hamazaki  Hiromi Kajiya‐Kanegae  Masanori Yamasaki  Kaworu Ebana  Shiori Yabe  Hiroshi Nakagawa  Hiroyoshi Iwata
+The Plant Genome. 2019;e20005. 
+[doi.org/10.1002/tpg2.20005](https://doi.org/10.1002/tpg2.20005)
+
 ***
 
 ### REF=IRGSP-1.0_genome.fasta
