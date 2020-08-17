@@ -13,6 +13,10 @@ Kosuke Hamazaki  Hiromi Kajiya‐Kanegae  Masanori Yamasaki  Kaworu Ebana  Shior
 The Plant Genome. 2019;e20005. 
 [doi.org/10.1002/tpg2.20005](https://doi.org/10.1002/tpg2.20005)
 
+### Coupling day length data and genomic prediction tools for predicting time-related traits under complex scenarios
+Diego Jarquin, Hiromi Kajiya-Kanegae, Chen Taishen, Shiori Yabe, Reyna Persa, Jianming Yu, Hiroshi Nakagawa, Masanori Yamasaki, Hiroyoshi Iwata
+Sci Rep. 2020 A10:13382. 
+[doi: 10.1038/s41598-020-70267-9.](https://www.nature.com/articles/s41598-020-70267-9)
 ***
 
 ### REF=IRGSP-1.0_genome.fasta
