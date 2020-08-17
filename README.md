@@ -10,7 +10,7 @@ PMID: 30458025
 
 ### Choosing the optimal population for a genome‐wide association study: A simulation of whole‐genome sequences from rice
 Kosuke Hamazaki  Hiromi Kajiya‐Kanegae  Masanori Yamasaki  Kaworu Ebana  Shiori Yabe  Hiroshi Nakagawa  Hiroyoshi Iwata
-The Plant Genome. 2019;e20005. 
+The Plant Genome. 2020;e20005. 
 [doi.org/10.1002/tpg2.20005](https://doi.org/10.1002/tpg2.20005)
 
 ### Coupling day length data and genomic prediction tools for predicting time-related traits under complex scenarios
