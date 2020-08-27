@@ -11,50 +11,92 @@ PMID: 30458025
 ### Choosing the optimal population for a genome‐wide association study: A simulation of whole‐genome sequences from rice
 Kosuke Hamazaki  Hiromi Kajiya‐Kanegae  Masanori Yamasaki  Kaworu Ebana  Shiori Yabe  Hiroshi Nakagawa  Hiroyoshi Iwata
 The Plant Genome. 2020;e20005. 
-[doi.org/10.1002/tpg2.20005](https://doi.org/10.1002/tpg2.20005)
+[doi.org/10.1002/tpg2.20005](https://doi.org/10.1002/tpg2.20005)  
 [Pipeline LINK](https://github.com/hkanegae/OryzaSNP_pipeline/blob/master/PMID30458025.md) 
 
 ### Coupling day length data and genomic prediction tools for predicting time-related traits under complex scenarios
 Diego Jarquin, Hiromi Kajiya-Kanegae, Chen Taishen, Shiori Yabe, Reyna Persa, Jianming Yu, Hiroshi Nakagawa, Masanori Yamasaki, Hiroyoshi Iwata
 Sci Rep. 2020 A10:13382. 
-[doi: 10.1038/s41598-020-70267-9.](https://www.nature.com/articles/s41598-020-70267-9)
-PMID: 32770083 
+[doi: 10.1038/s41598-020-70267-9.](https://www.nature.com/articles/s41598-020-70267-9)  
+PMID: 32770083   
 [Pipeline LINK](https://github.com/hkanegae/OryzaSNP_pipeline/blob/master/PMID30458025.md) 
 ***
 
-### REF=IRGSP-1.0_genome.fasta
-### trimmomatic
-java -jar trimmomatic-0.36.jar PE -threads 4 -phred33 "$dir"/"$name"_1.fastq.gz "$dir"/"$name"_2.fastq.gz "$dir"/"$name"_1_paired.fastq.gz "$dir"/"$name"_1_unpaired.fastq.gz "$dir"/"$name"_2_paired.fastq.gz "$dir"/"$name"_2_unpaired.fastq.gz ILLUMINACLIP:/Trimmomatic-0.36/adapters/TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+## Analysis workflow for detection of genome-wide variations in TASUKE+ of RAP-DB was modified.
 
-### Mapping / bwa-0.7.12
-$bwa mem -M -t 4 oryza_index "$dir"/"$name"_1_paired.fastq.gz "$dir"/"$name"_2_paired.fastq.gz | $samtools view -bS - | $samtools sort -T tmpsam"$name" -@4 -o "$dir2"/"$name".sorted.bam
+### REF=RGSP-1.0 genome (including organella and unanchored contig sequences) [FASTA](https://rapdb.dna.affrc.go.jp/download/archive/genome-wide_variations/IRGSP-1.0_genome_M_C_unanchored.fa.gz)
 
-### samtools flagstat / samtools-1.3.1
+### trimmomatic (v0.38)
+$ java -jar trimmomatic-0.38.jar PE \
+    -phred33 read.r1.fastq.gz read.r2.fastq.gz \
+    read.pe.r1.fastq.gz read.se.r1.fastq.gz read.pe.r2.fastq.gz read.se.r2.fastq.gz \
+    ILLUMINACLIP:adapters.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:10:20 MINLEN:30
+
+### Mapping / bwa v0.7.17
+$ java -jar picard.jar FastqToSam \
+    FASTQ=read.pe.r1.fastq.gz \
+    FASTQ2=read.pe.r2.fastq.gz \
+    OUTPUT=uBAM.bam \
+    READ_GROUP_NAME=${SAMPLE_ID} \
+    SAMPLE_NAME=${SAMPLE_ID} \
+    LIBRARY_NAME=${SAMPLE_ID} \
+
+$ java -jar picard.jar MergeBamAlignment \
+    ALIGNED=alignment.sort.bam \
+    UNMAPPED=uBAM.bam \
+    OUTPUT=alignment.merge.bam \
+    REFERENCE_SEQUENCE=genome.fa
+
+### samtools flagstat / samtools (v1.9)
 $samtools flagstat "$dir2"/"$name".sorted.bam > "$dir3"/"$name"_flagstat.txt
-
-### sort_bam index
-$samtools index "$dir2"/"$name".sorted.bam
 
 ### FixMate information / picard-tools-2.5.0
 java -jar picard.jar FixMateInformation I="$dir2"/"$name".sorted.bam O="$dir5"/"$name".fxmt.bam SO=coordinate CREATE_INDEX=TRUE
 
-### Mark duplicate reads
-java -jar picard.jar MarkDuplicates I="$dir5"/"$name".fxmt.bam O="$dir5"/"$name".mkdup.bam M="$dir5"/"$name".metrics.txt CREATE_INDEX=TRUE
+### Remove PCR duplicates  / Picard (v2.18.17)
+$ java -jar picard.jar MarkDuplicates \
+    INPUT=alignment.merge.bam \
+    OUTPUT=alignment.rmdup.bam \
+    METRICS_FILE=rmdup.matrix \
+    REMOVE_DUPLICATES=true \
+    MAX_RECORDS_IN_RAM=1000000 \
+    TMP_DIR=./tmp
+$ samtools index alignment.rmdup.bam
 
-### Add or replace read groups
-java -jar picard.jar AddOrReplaceReadGroups I="$dir5"/"$name".mkdup.bam O="$dir5"/"$name".addrep.bam RGPL=illumina RGLB=lib1 RGPU=unit1 RGSM="$name" RGID="$name"
+### Variant detection and filtering by GATK / GATK (v4.0.11.0)
+$ gatk HaplotypeCaller \
+    --input alignment.rmdup.bam \
+    --output variants.g.vcf.gz \
+    --reference genome.fa \
+    -max-alternate-alleles 2 \
+    --emit-ref-confidence GVCF
 
-$samtools index "$dir5"/"$name".addrep.bam
+### GenomicsDBImport
+array=(chr01 chr02 chr03 chr04 chr05 chr06 chr07 chr08 chr09 chr10 chr11 chr12)
 
-### GATK RealignerTargetCreator / GATK 3.7-0-gcfedb67
-java -jar GenomeAnalysisTK.jar -T RealignerTargetCreator -R $REF -I "$dir5"/"$name".addrep.bam -o "$dir5"/"$name".addrep.intervals
+for name in ${array[@]}; do echo $name; 
+gatk --java-options "$JAVA_MEM" GenomicsDBImport --reference genome.fa -V variants_A.g.vcf.gz -V variants_B.g.vcf.gz -V variants_C.g.vcf.gz --genomicsdb-workspace-path variants_"$name" --intervals "$name"
+done
 
-### GATK IndelRealigner
-java -jar GenomeAnalysisTK.jar -T IndelRealigner -R $REF -I "$dir5"/"$name".addrep.bam -targetIntervals "$dir5"/"$name".addrep.intervals -o "$dir5"/"$name".realn.bam
+ 
+### GenotypeGVCFs
+for name in ${array[@]}; do echo $name;
+gatk --java-options "$JAVA_MEM" GenotypeGVCFs --reference genome.fa -V gendb://variants_"$name" -G StandardAnnotation --new-qual -O variants.genotype_"$name".vcf.gz
+done
 
-### CollectRawWgsMetrics
-java -jar picard.jar CollectRawWgsMetrics I="$dir5"/"$name".realn.bam O="$dir6"/"$name"_metrics.txt R=$REF INCLUDE_BQ_HISTOGRAM=true
+### VariantFiltration
 
-### SNP call
+for name in ${array[@]}; do echo $name;
+gatk --java-options "$JAVA_MEM" VariantFiltration --reference genome.fa --variant variants.genotype_"$name".vcf.gz --output variants.filter.genotype_"$name".vcf.gz --filter-expression "QD < 5.0 || FS > 50.0 || SOR > 3.0 || MQ < 50.0 || MQRankSum < -2.5 || ReadPosRankSum < -1.0 || ReadPosRankSum > 3.5" --filter-name "FILTER"
+done
 
-java -Xmx8g -jar GenomeAnalysisTK.jar -T UnifiedGenotyper -I "$dir5"/"$name".realn.bam -R $REF -glm BOTH -gt_mode DISCOVERY -o $name.vcf -nt 4
+### SelectVariants
+
+for name in ${array[@]}; do echo $name;
+gatk --java-options "$JAVA_MEM" SelectVariants --reference genome.fa --variant variants.filter.genotype_"$name".vcf.gz  --output variants.varonly.vcf.gz  --exclude-filtered --select-type-to-include SNP  --select-type-to-include INDEL
+done
+
+### merge varonly.vcf
+java $JAVA_MEM -jar $PICARD_HOME/picard.jar MergeVcfs O=variants.varonly.vcf.gz I= variants_chr01.varonly.vcf.gz I=variants_chr02.varonly.vcf.gz I= variants_chr03.varonly.vcf.gz I=variants_chr04.varonly.vcf.gz I= variants_chr05.varonly.vcf.gz I=variants_chr06.varonly.vcf.gz I= variants_chr07.varonly.vcf.gz I=variants_chr08.varonly.vcf.gz I= variants_chr09.varonly.vcf.gz I=variants_chr10.varonly.vcf.gz I= variants_chr11.varonly.vcf.gz I= variants_chr12.varonly.vcf.gz
+
+
