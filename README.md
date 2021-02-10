@@ -21,6 +21,12 @@ Sci Rep. 2020 A10:13382.
 PMID: 32770083   
 [Pipeline LINK](https://github.com/hkanegae/OryzaSNP_pipeline/blob/master/PMID30458025.md) 
 ***
+### Predicting Rice Heading Date Using an Integrated Approach Combining a Machine Learning Method and a Crop Growth Model
+Tai-Shen Chen, Toru Aoike, Masanori Yamasaki, Hiromi Kajiya-Kanegae and Hiroyoshi Iwata 
+[doi: 10.3389/fgene.2020.599510](https://www.frontiersin.org/articles/10.3389/fgene.2020.599510/full)  
+PMID: 33391352   
+[Pipeline LINK](https://github.com/hkanegae/OryzaSNP_pipeline/blob/master/PMID30458025.md) 
+***
 
 ## Analysis workflow for detection of genome-wide variations in TASUKE+ of RAP-DB was modified.
 
